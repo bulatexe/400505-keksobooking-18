@@ -1,7 +1,7 @@
 # Личный проект «Кексобукинг» [![Build status][travis-image]][travis-url]
 
 * Студент: [Булат Миннибаев](https://up.htmlacademy.ru/javascript/18/user/400505).
-* Наставник: `Неизвестно`.
+* Наставник: [Булат Миннибаев](https://up.htmlacademy.ru/javascript/18/user/400505).
 
 ---
 
