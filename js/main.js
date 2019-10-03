@@ -1,13 +1,87 @@
 'use strict';
 var BOOKING_LENGTH = 8;
+var ENTER_KEYDOWN = 13;
+var MAP_MAIN_PIN_WIDTH = 35;
+var MAP_MAIN_PIN_HEIGHT = 35;
+var START_X;
+var MIN_ROOM_COUNT = 0;
+var MAX_ROOM_COUNT = 100;
+
+var html = document.querySelector('html');
+var body = document.querySelector('body');
+
+START_X = (html.offsetWidth - body.offsetWidth) / 2;
 
 var map = document.querySelector('.map');
+var mapPinMain = document.querySelector('.map__pin.map__pin--main');
 var mapPins = document.querySelector('.map__pins');
 var mapPinTemplate = document.querySelector('#pin').content.querySelector('.map__pin');
 var mapPinDetailTemplate = document.querySelector('#card').content.querySelector('.map__card.popup');
 var mapFiltersContainer = document.querySelector('.map__filters-container');
+
+
+var selectRooms = document.querySelector('#room_number');
+var selectCapacity = document.querySelector('#capacity');
+
+var selectRoomsValue;
+var selectCapacityValue;
+
+var selectRoomsValidation = function () {
+  selectRoomsValue = parseInt(selectRooms.value, 10);
+  selectCapacityValue = parseInt(selectCapacity.value, 10);
+
+  if (selectRoomsValue < selectCapacityValue) {
+    selectCapacity.setCustomValidity('В комнату не поместятся столько гостей');
+  } else if (selectCapacityValue === MIN_ROOM_COUNT && selectRoomsValue === MAX_ROOM_COUNT) {
+    selectCapacity.setCustomValidity('');
+  } else if (selectCapacityValue === MIN_ROOM_COUNT || selectRoomsValue === MAX_ROOM_COUNT) {
+    selectCapacity.setCustomValidity('Тогда квартира на 100 комнат');
+  } else {
+    selectCapacity.setCustomValidity('');
+  }
+};
+
+var mainForm = document.querySelector('.ad-form');
+var mainFormSubmit = document.querySelector('.ad-form__submit');
+
+var inputAddress = document.querySelector('#address');
+
 var fragment = document.createDocumentFragment();
-map.classList.remove('map--faded');
+
+var getCoord = function (elem, startX, elemGapX, elemGapY) {
+  var box = elem.getBoundingClientRect();
+
+  return {
+    top: box.top + pageYOffset + elemGapY,
+    left: (box.left + pageXOffset + elemGapX) - startX
+  };
+};
+
+var mainPinCoord = getCoord(mapPinMain, START_X, MAP_MAIN_PIN_WIDTH, MAP_MAIN_PIN_HEIGHT);
+
+var onMapOpen = function () {
+  map.classList.remove('map--faded');
+  mainForm.classList.remove('ad-form--disabled');
+  inputAddress.value = mainPinCoord.left + ', ' + mainPinCoord.top;
+};
+
+var onEnterEvent = function (evt, callback) {
+  if (evt.keyCode === ENTER_KEYDOWN) {
+    callback();
+  }
+};
+
+var onEnterMapOpen = function (evt) {
+  onEnterEvent(evt, onMapOpen);
+};
+
+var onPinFocus = function () {
+  document.addEventListener('keydown', onEnterMapOpen);
+};
+
+var onPinBlur = function () {
+  document.removeEventListener('keydown', onEnterMapOpen);
+};
 
 var mapGap = (document.querySelector('html').offsetWidth - map.offsetWidth) / 2;
 
@@ -18,34 +92,63 @@ var getRandomIntInclusive = function (min, max) {
   return Math.floor(Math.random() * (max - min + 1)) + min;
 };
 
-var offerTitles = [
-  'Маленькая квартирка рядом с парком',
-  'Небольшая лавочка в парке',
-  'Императорский дворец в центре Токио',
-  'Милейший чердачок',
-  'Наркоманский притон',
-  'Чёткая хата',
-  'Стандартная квартира в центре',
-  'Тихая квартирка недалеко от метро'
-];
+var bookingAdData = {
+  offerTitles: [
+    'Маленькая квартирка рядом с парком',
+    'Небольшая лавочка в парке',
+    'Императорский дворец в центре Токио',
+    'Милейший чердачок',
+    'Наркоманский притон',
+    'Чёткая хата',
+    'Стандартная квартира в центре',
+    'Тихая квартирка недалеко от метро'
+  ],
+  prices: [
+    5000,
+    15000,
+    10000,
+    25000,
+    12000,
+    30000,
+    18000,
+    50000
+  ],
+  bookingTypes: [
+    'palace',
+    'flat',
+    'house',
+    'bungalo'
+  ],
+  checks: [
+    '12:00',
+    '13:00',
+    '14:00'
+  ],
+  features: [
+    'wifi',
+    'dishwasher',
+    'parking',
+    'washer',
+    'elevator',
+    'conditioner'
+  ],
+  descriptions: [
+    'Квартира на первом этаже. Соседи тихие. Для всех, кто терпеть не может шума и суеты.',
+    'Великолепный таун-хауз в центре Токио. Подходит как туристам, так и бизнесменам. Дом полностью укомплектован и имеет свежий ремонт.',
+    'Маленькая чистая квратира на краю парка. Без интернета, регистрации и СМС.',
+    'Великолепная лавочка прямо в центре парка. Подходит для всех кто любит спать на свежем воздухе.',
+    'Маленькая квартирка на чердаке. Для самых не требовательных.',
+    'Замечательный дворец в старинном центре города. Только для тех кто может себе позволить дворец. Лакеев и прочих жокеев просим не беспокоить.',
+    'У нас есть всё! Шприцы, интернет, кофе. Для всех кто знает толк в отдыхе. Полицию просим не беспокоить.',
+    'Тут красиво, светло и уютно. Есть где разместиться компании из 5 человек. Кофе и печеньки бесплатно.'
+  ],
+  photos: [
+    'http://o0.github.io/assets/images/tokyo/hotel1.jpg',
+    'http://o0.github.io/assets/images/tokyo/hotel2.jpg',
+    'http://o0.github.io/assets/images/tokyo/hotel3.jpg'
+  ]
+};
 
-var prices = [
-  5000,
-  15000,
-  10000,
-  25000,
-  12000,
-  30000,
-  18000,
-  50000
-];
-
-var bookingTypes = [
-  'palace',
-  'flat',
-  'house',
-  'bungalo'
-];
 
 var bookingTypesDetail = {
   'palace': 'Дворец',
@@ -53,38 +156,6 @@ var bookingTypesDetail = {
   'house': 'Дом',
   'bungalo': 'Бунгало'
 };
-
-var checks = [
-  '12:00',
-  '13:00',
-  '14:00'
-];
-
-var features = [
-  'wifi',
-  'dishwasher',
-  'parking',
-  'washer',
-  'elevator',
-  'conditioner'
-];
-
-var descriptions = [
-  'Квартира на первом этаже. Соседи тихие. Для всех, кто терпеть не может шума и суеты.',
-  'Великолепный таун-хауз в центре Токио. Подходит как туристам, так и бизнесменам. Дом полностью укомплектован и имеет свежий ремонт.',
-  'Маленькая чистая квратира на краю парка. Без интернета, регистрации и СМС.',
-  'Великолепная лавочка прямо в центре парка. Подходит для всех кто любит спать на свежем воздухе.',
-  'Маленькая квартирка на чердаке. Для самых не требовательных.',
-  'Замечательный дворец в старинном центре города. Только для тех кто может себе позволить дворец. Лакеев и прочих жокеев просим не беспокоить.',
-  'У нас есть всё! Шприцы, интернет, кофе. Для всех кто знает толк в отдыхе. Полицию просим не беспокоить.',
-  'Тут красиво, светло и уютно. Есть где разместиться компании из 5 человек. Кофе и печеньки бесплатно.'
-];
-
-var photos = [
-  'http://o0.github.io/assets/images/tokyo/hotel1.jpg',
-  'http://o0.github.io/assets/images/tokyo/hotel2.jpg',
-  'http://o0.github.io/assets/images/tokyo/hotel3.jpg'
-];
 
 var createLocationX = function () {
   return getRandomIntInclusive(mapGap, map.offsetWidth - 50);
@@ -98,17 +169,17 @@ var createBookingAd = function (index) {
   return {
     'author': 'img/avatars/user0' + (index + 1) + '.png',
     'offer': {
-      'title': offerTitles[index],
+      'title': bookingAdData.offerTitles[index],
       'address': createLocationX() + ', ' + createLocationY(),
-      'price': prices[index],
-      'type': bookingTypes[getRandomIntInclusive(0, bookingTypes.length - 1)],
+      'price': bookingAdData.prices[index],
+      'type': bookingAdData.bookingTypes[getRandomIntInclusive(0, bookingAdData.bookingTypes.length - 1)],
       'rooms': getRandomIntInclusive(1, 5),
       'guests': getRandomIntInclusive(1, 5),
-      'checkin': checks[getRandomIntInclusive(0, checks.length - 1)],
-      'checkout': checks[getRandomIntInclusive(0, checks.length - 1)],
-      'features': features.splice(0, getRandomIntInclusive(0, features.length - 2)),
-      'description': descriptions[index],
-      'photos': photos
+      'checkin': bookingAdData.checks[getRandomIntInclusive(0, bookingAdData.checks.length - 1)],
+      'checkout': bookingAdData.checks[getRandomIntInclusive(0, bookingAdData.checks.length - 1)],
+      'features': bookingAdData.features.splice(0, getRandomIntInclusive(0, bookingAdData.features.length - 2)),
+      'description': bookingAdData.descriptions[index],
+      'photos': bookingAdData.photos
     },
     'location': {
       'x': createLocationX(),
@@ -142,6 +213,7 @@ var renderBookingPinAd = function (bookingAd) {
 
 var renderBookingAdDetail = function (bookingAd) {
   var bookingDetail = mapPinDetailTemplate.cloneNode(true);
+  var bookingDetailImg;
 
   bookingDetail.querySelector('.popup__title').textContent = bookingAd.offer.title;
   bookingDetail.querySelector('.popup__text--address').textContent = bookingAd.offer.address;
@@ -158,7 +230,7 @@ var renderBookingAdDetail = function (bookingAd) {
       bookingDetail.querySelector('.popup__photos img').src = bookingAd.offer.photos[0];
       i++;
     }
-    var bookingDetailImg = bookingDetail.querySelector('.popup__photos img').cloneNode();
+    bookingDetailImg = bookingDetail.querySelector('.popup__photos img').cloneNode();
     bookingDetailImg.src = bookingAd.offer.photos[i];
     bookingDetail.querySelector('.popup__photos').appendChild(bookingDetailImg);
   }
@@ -187,3 +259,9 @@ var renderBookingsDetailAds = function () {
 
 renderBookingsPinAds();
 renderBookingsDetailAds();
+
+
+mapPinMain.addEventListener('mousedown', onMapOpen);
+mapPinMain.addEventListener('focus', onPinFocus);
+mapPinMain.addEventListener('blur', onPinBlur);
+mainFormSubmit.addEventListener('click', selectRoomsValidation);
