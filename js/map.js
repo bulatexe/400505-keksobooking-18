@@ -74,14 +74,14 @@
     inputAddress.value = MainPinCoords.x + ', ' + MainPinCoords.y;
     document.removeEventListener('keydown', onEnterMapOpen);
     if (pinFlagOpen === true) {
-      window.renderBookingPinAds();
+      window.load(window.successHandler, window.errorHandler);
       pinFlagOpen = false;
     }
   };
 
   var mapInit = function () {
     pinFlagOpen = true;
-    mapPinMain.addEventListener('mousedown', onMapOpen);
+    mapPinMain.addEventListener('mouseup', onMapOpen);
     document.addEventListener('keydown', onEnterMapOpen);
   };
 

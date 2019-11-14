@@ -15,7 +15,7 @@
     var cardElement = mapPinDetailTemplate.cloneNode(true);
     var cardImgElement;
 
-    cardElement.querySelector('.popup__avatar').src = bookingAd.author;
+    cardElement.querySelector('.popup__avatar').src = bookingAd.author.avatar;
     cardElement.querySelector('.popup__title').textContent = bookingAd.offer.title;
     cardElement.querySelector('.popup__text--address').textContent = bookingAd.offer.address;
     cardElement.querySelector('.popup__text--price').textContent = bookingAd.offer.price + '₽/ночь.';
@@ -24,7 +24,6 @@
     cardElement.querySelector('.popup__text--time').textContent = 'Заезд после ' + bookingAd.offer.checkin + ' выезд до ' + bookingAd.offer.checkout;
     cardElement.querySelector('.popup__features li').textContent = bookingAd.offer.features;
     cardElement.querySelector('.popup__description').textContent = bookingAd.offer.description;
-    cardElement.querySelector('.popup__avatar').src = bookingAd.author;
 
     for (var i = 0; i < bookingAd.offer.photos.length; i++) {
       if (i === 0) {
