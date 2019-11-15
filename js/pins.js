@@ -6,7 +6,6 @@
   var mapPins = document.querySelector('.map__pins');
   var mapPinTemplate = document.querySelector('#pin').content.querySelector('.map__pin');
   var mapFiltersContainer = document.querySelector('.map__filters-container');
-  var mapErrorTemplate = document.querySelector('#error').content.querySelector('.error');
 
   var renderBookingPinAd = function (bookingAd) {
     var mapPinElement = mapPinTemplate.cloneNode(true);
@@ -43,6 +42,7 @@
       cartPopupClose.addEventListener('keydown', onEnterRemoveCart);
       document.addEventListener('keydown', onEscRemoveCart);
     };
+
     var onPinEnterPress = function (evt) {
       window.util.isEnterEvent(evt, onPinClick);
     };
@@ -54,7 +54,7 @@
     return mapPinElement;
   };
 
-  window.successHandler = function (bookingAds) {
+  window.renderPin = function (bookingAds) {
     var pinFragment = document.createDocumentFragment();
 
     for (var i = 0; i < bookingAds.length; i++) {
@@ -62,25 +62,5 @@
     }
 
     mapPins.appendChild(pinFragment);
-  };
-
-  window.errorHandler = function (errorMessage) {
-    var mapErrorElement = mapErrorTemplate.cloneNode(true);
-
-    mapErrorElement.querySelector('.error__message').textContent = errorMessage;
-
-    document.querySelector('main').appendChild(mapErrorElement);
-
-    var onHideErrorMessage = function () {
-      mapErrorElement.classList.add('hidden');
-      document.removeEventListener('keydown', onEscHideErrorMessage);
-    };
-
-    var onEscHideErrorMessage = function (evt) {
-      window.util.isEscEvent(evt, onHideErrorMessage);
-    };
-
-    mapErrorElement.querySelector('.error__button').addEventListener('click', onHideErrorMessage);
-    document.addEventListener('keydown', onEscHideErrorMessage);
   };
 })();

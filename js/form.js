@@ -7,10 +7,10 @@
   };
 
   var BookingTypesRange = {
-    'palace': '10000',
-    'flat': '1000',
-    'house': '5000',
-    'bungalo': '0'
+    'palace': 10000,
+    'flat': 1000,
+    'house': 5000,
+    'bungalo': 0
   };
 
   var selectRooms = document.querySelector('#room_number');
@@ -23,7 +23,8 @@
   var timeInInput = document.querySelector('#timein');
   var timeOutInput = document.querySelector('#timeout');
 
-  var mainFormSubmit = document.querySelector('.ad-form__submit');
+  var mainForm = document.querySelector('.ad-form');
+  var mainFormSubmitButton = document.querySelector('.ad-form__submit');
 
   var selectRoomsValidation = function () {
 
@@ -48,6 +49,15 @@
     inputPrice.placeholder = minPrice;
   };
 
+  var onTypeCheckValidation = function () {
+    if (parseInt(inputPrice.value, 10) < BookingTypesRange[selectType.value]) {
+      inputPrice.setCustomValidity('Минимальная сумма объявление данного типа жилья' + BookingTypesRange[selectType.value]);
+    } else {
+      inputPrice.setCustomValidity('');
+    }
+  };
+
+
   var onTimeInChange = function (evt) {
     timeOutInput.value = evt.target.value;
   };
@@ -58,10 +68,21 @@
 
   var checkValidity = function () {
     selectRoomsValidation();
+    onTypeCheckValidation();
   };
 
-  mainFormSubmit.addEventListener('click', checkValidity);
+  var uploadForm = function (evt) {
+    window.backend.upload(new FormData(mainForm), window.showSuccessMessage, window.showErrorMessage);
+    if (mainForm.checkValidity()) {
+      mainForm.reset();
+    }
+    evt.preventDefault();
+  };
+
+  mainFormSubmitButton.addEventListener('click', checkValidity);
+  mainForm.addEventListener('submit', uploadForm);
   selectType.addEventListener('change', onTypeChange);
   timeInInput.addEventListener('change', onTimeInChange);
   timeOutInput.addEventListener('change', onTimeOutChange);
+
 })();
