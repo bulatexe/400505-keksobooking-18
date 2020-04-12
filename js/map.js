@@ -1,89 +1,89 @@
 'use strict';
 
-(function () {
-  var MAIN_PIN_HEIGHT = 80;
+(function() {
+    let mapPinHeigth = 80;
+    let mapFlagOpen = false;
+    let map = document.querySelector('.map');
+    let mapPinMain = document.querySelector('.map__pin--main');
+    let mapPins = document.querySelector('.map__pins');
+    let mainForm = document.querySelector('.ad-form');
+    let inputAddress = document.querySelector('#address');
 
-  var pinFlagOpen = false;
+    let MainPinCoords = {
+        x: 570,
+        y: 375
+      };
 
-  var map = document.querySelector('.map');
-  var mapPins = document.querySelector('.map__pins');
-  var mapPinMain = document.querySelector('.map__pin--main');
-  var mainForm = document.querySelector('.ad-form');
-  var inputAddress = document.querySelector('#address');
 
-  var MainPinCoords = {
-    x: 570,
-    y: 375
-  };
+    mapPinMain.addEventListener('mousedown', (evt) => {
+        evt.preventDefault();
+        mapPinMain.style.position = 'absolute';
 
-  mapPinMain.onmousedown = function (evt) {
-    evt.preventDefault();
-    mapPinMain.style.position = 'absolute';
+        let shift = {
+        x: evt.clientX - mapPinMain.getBoundingClientRect().left,
+        y: evt.clientY - mapPinMain.getBoundingClientRect().top
+        };
 
-    var shift = {
-      x: evt.clientX - mapPinMain.getBoundingClientRect().left,
-      y: evt.clientY - mapPinMain.getBoundingClientRect().top
-    };
+        
+        let onMouseMove = (evt) => {
+            let newLeft = evt.clientX - shift.x - mapPins.getBoundingClientRect().left;
+            let newTop = evt.clientY - shift.y - mapPins.getBoundingClientRect().top;
+    
+            if (newLeft < 0) {
+            newLeft = 0;
+            }
+    
+            if (newTop < 0) {
+            newTop = 0;
+            }
+    
+            let rightEdge = mapPins.offsetWidth - mapPinMain.offsetWidth;
+            let bottomEdge = mapPins.offsetHeight - mapPinHeigth; 
+    
+            if (newLeft > rightEdge) {
+            newLeft = rightEdge;
+            }
+    
+            if (newTop > bottomEdge) {
+            newTop = bottomEdge;
+            }
+    
+            mapPinMain.style.left = newLeft + 'px';
+            mapPinMain.style.top = newTop + 'px';
 
-    // eslint-disable-next-line no-shadow
-    var onMouseMove = function (evt) {
-      var newLeft = evt.clientX - shift.x - mapPins.getBoundingClientRect().left;
-      var newTop = evt.clientY - shift.y - mapPins.getBoundingClientRect().top;
+            inputAddress.value = newLeft + ', ' + newTop;
+        };
 
-      if (newLeft < 0) {
-        newLeft = 0;
-      }
+        let onMouseUp = function () {
+            document.removeEventListener('mouseup', onMouseUp);
+            document.removeEventListener('mousemove', onMouseMove);
+        };
 
-      if (newTop < 0) {
-        newTop = 0;
-      }
+        document.addEventListener('mousemove', onMouseMove);
+        document.addEventListener('mouseup', onMouseUp);
 
-      var rightEdge = mapPins.offsetWidth - mapPinMain.offsetWidth;
-      var bottomEdge = mapPins.offsetHeight - MAIN_PIN_HEIGHT;
+    })
 
-      if (newLeft > rightEdge) {
-        newLeft = rightEdge;
-      }
+    let onEnterMapOpen = function (evt) {
+        window.util.isEnterEvent(evt, onMapOpen);
+      };
 
-      if (newTop > bottomEdge) {
-        newTop = bottomEdge;
-      }
-
-      mapPinMain.style.left = newLeft + 'px';
-      mapPinMain.style.top = newTop + 'px';
-
-      inputAddress.value = newLeft + ', ' + newTop;
-    };
-
-    var onMouseUp = function () {
-      document.removeEventListener('mouseup', onMouseUp);
-      document.removeEventListener('mousemove', onMouseMove);
-    };
-
-    document.addEventListener('mousemove', onMouseMove);
-    document.addEventListener('mouseup', onMouseUp);
-  };
-
-  var onEnterMapOpen = function (evt) {
-    window.util.isEnterEvent(evt, onMapOpen);
-  };
-
-  var onMapOpen = function () {
-    map.classList.remove('map--faded');
-    mainForm.classList.remove('ad-form--disabled');
-    inputAddress.value = MainPinCoords.x + ', ' + MainPinCoords.y;
-    document.removeEventListener('keydown', onEnterMapOpen);
-    if (pinFlagOpen === true) {
-      window.load(window.successHandler, window.errorHandler);
-      pinFlagOpen = false;
+    let onMapOpen = () => {
+        map.classList.remove('map--faded');
+        mainForm.classList.remove('ad-form--disabled');
+        document.removeEventListener('keydown', onEnterMapOpen);
+        if (mapFlagOpen === true) {
+            //load data
+            mapFlagOpen = false
+        }
     }
-  };
 
-  var mapInit = function () {
-    pinFlagOpen = true;
-    mapPinMain.addEventListener('mouseup', onMapOpen);
-    document.addEventListener('keydown', onEnterMapOpen);
-  };
+    let mapInit = () => {
+        mapFlagOpen = true;
+        mapPinMain.addEventListener('mouseup', onMapOpen);
+        document.addEventListener('keydown', onEnterMapOpen);
+        inputAddress.value = MainPinCoords.x + ', ' + MainPinCoords.y;
+    }
 
-  mapInit();
-})();
+    mapInit()
+})()
