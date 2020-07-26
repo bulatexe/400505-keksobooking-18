@@ -1,4 +1,4 @@
-# Личный проект «Кексобукинг» [![Build status][travis-image]][travis-url]
+# Личный проект «Кексобукинг» (https://bulatexe.github.io/400505-keksobooking-18/)
 
 * Студент: [Булат Миннибаев](https://up.htmlacademy.ru/javascript/18/user/400505).
 * Наставник: [Булат Миннибаев](https://up.htmlacademy.ru/javascript/18/user/400505).
