@@ -8,7 +8,6 @@
   <title>Кексобукинг</title>
 </head>
 <body>
-
   <main>
     <div class="promo">
       <h1 class="promo__title visually-hidden">Keksobooking. Кексы по соседству</h1>
@@ -188,7 +187,6 @@
       </form>
     </section>
   </main>
-
   <footer class="footer container">
     <div class="footer__copyright copyright">
       <a class="copyright__link copyright__link--image" href="https://htmlacademy.ru/intensive/javascript">
@@ -249,9 +247,18 @@
       <button class="error__button" href="#">Попробовать снова</button>
     </div>
   </template>
+
+    <!-- Модальное окно с фотографиями объявлений  -->
+    <template id="modal">
+      <div class="modal">
+        <button type="button" class="popup__close">Закрыть</button>
+        <img src="" class="modal__photo" alt="Фотография жилья">
+      </div>
+    </template>
   <script src="js/requests.js"></script>
   <script src="js/map.js"></script>
   <script src="js/cards.js"></script>
   <script src="js/util.js"></script>
+  <script src="js/form.js"></script>
 </body>
 </html>
